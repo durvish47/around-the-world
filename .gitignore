@@ -1,0 +1,9 @@
+# Temporary scratch files
+scratch_*.json
+build_word_doc.py
+
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

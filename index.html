@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#040b13" />
+    <title>GeoPulse 360 | 3D Orbital Explorer & AI Travel Matrix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- SVG Logo Mask Reveal Transition Overlay -->
+    <div id="svg-mask-overlay" class="svg-mask-overlay" aria-hidden="true">
+      <svg class="mask-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <defs>
+          <mask id="logo-aperture-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+            <rect width="100" height="100" fill="white" />
+            <circle id="mask-circle" cx="50" cy="50" r="0" fill="black" />
+          </mask>
+        </defs>
+        <rect width="100" height="100" fill="#040b13" mask="url(#logo-aperture-mask)" />
+      </svg>
+
+      <div class="hud-overlay-content">
+        <div class="hud-logo-emblem">
+          <svg viewBox="0 0 100 100" class="emblem-svg">
+            <circle cx="50" cy="50" r="44" stroke="var(--teal)" stroke-width="1.5" fill="none" stroke-dasharray="8 4" class="spin-clockwise" />
+            <circle cx="50" cy="50" r="36" stroke="var(--aqua)" stroke-width="1" fill="none" class="pulse-ring" />
+            <path d="M50 10 L50 90 M10 50 L90 50" stroke="var(--sun)" stroke-width="0.75" stroke-dasharray="2 2" />
+            <polygon points="50,20 57,37 74,37 60,47 66,64 50,53 34,64 40,47 26,37 43,37" fill="none" stroke="var(--magenta)" stroke-width="1.5" />
+          </svg>
+        </div>
+        <div class="hud-text-container">
+          <div class="hud-scanner-bar"></div>
+          <p class="hud-label">SATELLITE TELEMETRY LINK</p>
+          <h2 id="hud-target-name">TARGET ACQUISITION</h2>
+          <p class="hud-sublabel" id="hud-target-coords">LOCKING ORBITAL COORDINATES...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Experience Shell -->
+    <main class="experience" id="experience-main" data-weather="clear">
+      <div class="world-image" aria-hidden="true"></div>
+      <div class="globe-viz" id="globe-viz" aria-label="Interactive world globe"></div>
+      <div class="world-shade" aria-hidden="true"></div>
+      <div class="latitude-lines" aria-hidden="true"></div>
+      <div class="weather-field" id="weather-field" aria-hidden="true"></div>
+
+      <!-- Top Header Navigation -->
+      <header class="topbar">
+        <a class="wordmark" href="#top" aria-label="GeoPulse 360 Explorer">
+          <span class="wordmark-mark">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </span>
+          <div class="wordmark-text">
+            <span class="brand-title">GeoPulse 360</span>
+            <span class="brand-subtitle">3D Orbital Explorer & AI Travel Matrix</span>
+          </div>
+          <small class="counter-badge" id="global-count-badge">217</small>
+        </a>
+
+        <div class="topbar-actions">
+          <div class="shortcut-hint">
+            <kbd>/</kbd> <span>Search countries</span>
+          </div>
+          <p class="session-label" id="mode-label">Local mode <span class="live-dot"></span></p>
+        </div>
+      </header>
+
+      <!-- PHASE 01: STEP 1 - CHOOSE COUNTRY -->
+      <section class="selection-stage" id="top" aria-labelledby="selection-title">
+        <div class="selection-header">
+          <div class="stage-tag"><span class="step-num">STEP 01</span> // DESTINATION SELECTION</div>
+          <h2 id="selection-title" class="sr-only">Choose a Country</h2>
+          
+          <!-- Global Search Box -->
+          <div class="search-container">
+            <div class="search-input-wrapper">
+              <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+              <input
+                type="text"
+                id="country-search-input"
+                placeholder="Search all 200+ countries by name, capital, or code..."
+                autocomplete="off"
+                aria-label="Search countries"
+              />
+              <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Clear search" style="display: none;">
+                <i data-lucide="x" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <!-- Vibrant Region Filter Chips -->
+            <div class="region-chips" id="region-chips">
+              <button class="chip active" data-region="ALL">All Regions</button>
+              <button class="chip chip-asia" data-region="Asia">🌏 Asia</button>
+              <button class="chip chip-europe" data-region="Europe">🌍 Europe</button>
+              <button class="chip chip-africa" data-region="Africa">🌍 Africa</button>
+              <button class="chip chip-americas" data-region="Americas">🌎 Americas</button>
+              <button class="chip chip-oceania" data-region="Oceania">🌏 Oceania</button>
+            </div>
+
+            <!-- Autocomplete Search Results Dropdown -->
+            <div class="search-results-dropdown" id="search-results-dropdown" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Selected Country Target Hero Showcase -->
+        <div class="country-hero-card" id="country-hero-card">
+          <div class="hero-left">
+            <div class="country-meta-pill">
+              <span class="flag-icon" id="country-flag-icon">🇮🇳</span>
+              <span class="index-badge"><span id="country-index">01</span> / <span id="country-total">217</span></span>
+              <span class="iso-tag" id="country-iso-tag">IND</span>
+            </div>
+
+            <div class="country-heading" id="country-briefing">
+              <h1 id="country-name">India</h1>
+              <p id="country-capital"><i data-lucide="map-pin" class="inline-icon"></i> New Delhi, South Asia</p>
+            </div>
+
+            <p class="country-note" id="country-note">Where ancient trade routes meet a fast-moving digital economy.</p>
+
+            <div class="telemetry-bar">
+              <div class="telemetry-item">
+                <span class="tele-label">Coordinates</span>
+                <span class="tele-val" id="telemetry-coords">28.61° N, 77.21° E</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="tele-label">Local Time</span>
+                <span class="tele-val" id="local-mode">Synchronizing...</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="tele-label">Status</span>
+                <span class="tele-val highlight" id="country-status-tag">Target Locked</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <!-- 60 Second Orbit Dial -->
+            <div class="orbit-column" aria-label="60 second travel timer">
+              <div class="orbit-shadow"></div>
+              <div class="timer-dial" id="timer-dial">
+                <div class="timer-grid"></div>
+                <div class="timer-core">
+                  <span class="timer-value" id="timer-value">60</span>
+                  <span class="timer-unit">SECONDS</span>
+                </div>
+              </div>
+              <p class="timer-caption" id="timer-caption">Auto-touring location in 60s.</p>
+            </div>
+
+            <div class="action-buttons-group">
+              <button class="glow-button" id="reveal-stats-btn" type="button">
+                <span>VIEW STATS TELEMETRY</span>
+                <i data-lucide="arrow-down-circle" aria-hidden="true"></i>
+              </button>
+              <button class="secondary-button" id="random-country-btn" type="button" title="Jump to random country">
+                <i data-lucide="shuffle" aria-hidden="true"></i>
+                <span>Random</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHASE 02: STEP 2 - STATS & TELEMETRY MATRIX (REVEALED NEXT) -->
+      <section class="stats-matrix-stage" id="stats-matrix" aria-label="Country Statistics and Real-Time Signals">
+        <div class="section-divider">
+          <div class="divider-line"></div>
+          <div class="divider-badge">
+            <i data-lucide="activity" class="inline-icon"></i>
+            <span>STEP 02 // STATS TELEMETRY & QUANTUM ENGINE</span>
+          </div>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="stats-grid">
+          <!-- CARD 1: Full World Bank Country API Telemetry Profile -->
+          <article class="stat-card profile-card">
+            <header class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="globe-2" class="card-icon icon-emerald"></i>
+                <h3>World Bank Telemetry Profile</h3>
+              </div>
+              <span class="badge-tag tag-emerald" id="wb-status-badge">WORLD BANK API v2</span>
+            </header>
+
+            <dl class="country-details" id="country-details">
+              <div class="detail-row">
+                <dt>Income Group & Code</dt>
+                <dd id="income-level">Lower middle income (LMC)</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Lending Classification</dt>
+                <dd id="lending-type">IBRD (IBD)</dd>
+              </div>
+              <div class="detail-row">
+                <dt>WB Region & Code</dt>
+                <dd id="region-name">South Asia (SAS)</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Admin Region</dt>
+                <dd id="admin-region">South Asia</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Official Capital City</dt>
+                <dd id="detail-capital">New Delhi</dd>
+              </div>
+              <div class="detail-row">
+                <dt>ISO3 Country Code</dt>
+                <dd id="detail-iso3">IND</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Base Currency</dt>
+                <dd id="detail-currency">INR (Indian Rupee)</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Satellite Coordinates</dt>
+                <dd id="detail-coords">28.6139°, 77.2090°</dd>
+              </div>
+            </dl>
+          </article>
+
+          <!-- CARD 2: Vibrant Amber Weather Card -->
+          <article class="stat-card weather-card">
+            <header class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="cloud-sun" class="card-icon icon-amber"></i>
+                <h3>Capital Atmospheric Signal</h3>
+              </div>
+              <div class="unit-toggle-group">
+                <button type="button" class="unit-btn active" id="unit-c-btn">°C</button>
+                <button type="button" class="unit-btn" id="unit-f-btn">°F</button>
+              </div>
+            </header>
+
+            <div class="weather-body">
+              <div class="weather-primary">
+                <span class="weather-glyph" id="weather-glyph" aria-hidden="true">&#9788;</span>
+                <div class="temp-readout">
+                  <span class="temperature" id="temperature">--</span>
+                  <span class="temperature-unit" id="temperature-unit-label">°C</span>
+                </div>
+              </div>
+
+              <div class="weather-info">
+                <p class="weather-word" id="weather-word">Reading sky...</p>
+                <p class="weather-detail" id="weather-detail">Establishing a local weather signal</p>
+              </div>
+
+              <div class="weather-metrics">
+                <div class="metric-item">
+                  <i data-lucide="wind" aria-hidden="true"></i>
+                  <span id="wind-speed">Wind -- km/h</span>
+                </div>
+                <div class="metric-item">
+                  <i data-lucide="clock" aria-hidden="true"></i>
+                  <span id="local-time">Local time --:--</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 3: Vibrant Violet Quantum Currency Exchange Engine -->
+          <article class="stat-card quantum-currency-card">
+            <header class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="cpu" class="card-icon icon-violet glow-pulse-icon"></i>
+                <h3>Quantum Currency Conversion Engine</h3>
+              </div>
+              <div class="live-rate-badge badge-violet">
+                <span class="pulse-dot dot-violet"></span>
+                <span id="rate-date">LIVE MATRIX</span>
+              </div>
+            </header>
+
+            <div class="currency-engine-body">
+              <!-- Conversion Input Row -->
+              <div class="conversion-controls">
+                <!-- BASE CURRENCY SELECTOR -->
+                <div class="currency-selector-box">
+                  <label for="base-currency-select" class="field-label field-violet">FROM (BASE)</label>
+                  <div class="custom-select-wrapper wrapper-violet">
+                    <span class="select-flag" id="base-flag-preview">🇺🇸</span>
+                    <select id="base-currency-select" aria-label="Base currency">
+                      <!-- Populated via JS -->
+                    </select>
+                  </div>
+                </div>
+
+                <!-- SWAP BUTTON -->
+                <button type="button" id="swap-currency-btn" class="swap-btn swap-violet" aria-label="Swap currencies" title="Swap currencies">
+                  <i data-lucide="arrow-left-right" aria-hidden="true"></i>
+                </button>
+
+                <!-- TARGET CURRENCY SELECTOR -->
+                <div class="currency-selector-box">
+                  <label for="target-currency-select" class="field-label field-violet">TO (TARGET)</label>
+                  <div class="custom-select-wrapper wrapper-violet">
+                    <span class="select-flag" id="target-flag-preview">🇮🇳</span>
+                    <select id="target-currency-select" aria-label="Target currency">
+                      <!-- Populated via JS -->
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AMOUNT INPUT & PRESETS -->
+              <div class="amount-input-group">
+                <div class="amount-field-wrapper wrapper-violet">
+                  <span class="currency-symbol-prefix symbol-violet" id="base-symbol-prefix">$</span>
+                  <input id="base-amount" type="number" min="1" step="1" value="1000" aria-label="Amount to convert" />
+                  <span class="base-code-suffix" id="base-code-suffix">USD</span>
+                </div>
+
+                <div class="preset-chips">
+                  <button type="button" class="preset-chip chip-violet" data-amount="100">100</button>
+                  <button type="button" class="preset-chip chip-violet active" data-amount="1000">1K</button>
+                  <button type="button" class="preset-chip chip-violet" data-amount="5000">5K</button>
+                  <button type="button" class="preset-chip chip-violet" data-amount="10000">10K</button>
+                </div>
+              </div>
+
+              <!-- FUTURISTIC CONVERTED READOUT -->
+              <div class="futuristic-readout-panel readout-violet">
+                <div class="readout-header">
+                  <span class="readout-label">CONVERTED OUTPUT TELEMETRY</span>
+                  <span class="rate-ratio ratio-violet" id="rate-detail">1 USD = -- INR</span>
+                </div>
+
+                <div class="readout-value-box">
+                  <div class="converted-result-display result-violet" id="conversion-result">Loading...</div>
+                </div>
+
+                <!-- Animated Wave Frequency Graph -->
+                <div class="wave-visualizer">
+                  <svg viewBox="0 0 300 36" class="wave-svg" preserveAspectRatio="none">
+                    <path id="quantum-wave-path" d="M0,18 Q37.5,5 75,18 T150,18 T225,18 T300,18" fill="none" stroke="var(--violet)" stroke-width="2" opacity="0.85" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- QUICK CROSS-RATES MATRIX GRID -->
+              <div class="cross-rates-grid" id="cross-rates-grid">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- UNINTERRUPTED 3D GLOBE VIEWPORT ARENA -->
+      <section class="globe-viewport-deck" aria-label="3D Globe Viewport Arena">
+        <div class="globe-deck-card">
+          <div class="deck-tag">
+            <i data-lucide="eye" class="inline-icon"></i>
+            <span>3D GLOBE VIEWPORT ARENA</span>
+          </div>
+          <p class="deck-caption">Drag, rotate, and zoom the 3D world below to explore countries in deep space.</p>
+          <div class="deck-controls">
+            <button type="button" id="toggle-ui-panels-btn" class="deck-btn">
+              <i data-lucide="eye-off" id="toggle-ui-icon"></i>
+              <span id="toggle-ui-label">Hide UI (Focus Globe)</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Navigation Control Deck -->
+      <footer class="control-deck">
+        <div class="route-strip" aria-label="Tour route">
+          <span class="route-label">Orbital Path</span>
+          <div class="route-points" id="route-points"></div>
+          <span class="route-next" id="route-next">Next destination...</span>
+        </div>
+
+        <div class="command-bar">
+          <label class="compact-field country-field">
+            <span>Choose Destination</span>
+            <select id="country-picker" aria-label="Destination country">
+              <option value="">Loading countries...</option>
+            </select>
+          </label>
+
+          <button class="icon-button" id="pause-button" type="button" aria-label="Pause tour" data-tooltip="Pause tour">
+            <i data-lucide="pause" aria-hidden="true"></i>
+          </button>
+          
+          <button class="next-button" id="next-button" type="button">
+            <span>Next Country</span>
+            <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </footer>
+
+      <p class="source-line">Data sources: World Bank Country API (v2) &nbsp; / &nbsp; Weather: Open-Meteo &nbsp; / &nbsp; Rates: Frankfurter Exchange</p>
+      <p class="sr-only" id="announcement" aria-live="polite"></p>
+    </main>
+
+    <!-- AI TRAVEL ASSISTANT CHATBOT MODAL & FLOATING BUTTON -->
+    <div class="chat-widget-container">
+      <button type="button" id="chat-toggle-btn" class="chat-toggle-btn" aria-label="Open AI Travel Assistant">
+        <div class="bot-icon-badge">
+          <i data-lucide="bot" aria-hidden="true"></i>
+          <span class="bot-online-dot"></span>
+        </div>
+        <span class="chat-btn-text">AI Travel Bot</span>
+      </button>
+
+      <div class="chat-modal" id="chat-modal" style="display: none;">
+        <header class="chat-header">
+          <div class="chat-bot-info">
+            <div class="avatar-box">
+              <i data-lucide="sparkles" class="avatar-sparkle"></i>
+            </div>
+            <div class="bot-header-text">
+              <h4>Orbital AI Travel Guide</h4>
+              <p id="chat-bot-context">Context: India 🇮🇳</p>
+            </div>
+          </div>
+          <div class="chat-header-actions">
+            <button type="button" id="clear-chat-btn" class="chat-icon-btn" title="Clear chat history">
+              <i data-lucide="trash-2" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="close-chat-btn" class="chat-icon-btn" title="Close chat">
+              <i data-lucide="x" aria-hidden="true"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-message bot-msg">
+            <div class="msg-bubble">
+              <p>Greetings Explorer! 🚀 I'm your AI Travel Companion. Ask me anything about attractions, food, culture, travel tips, or budget guides for the current country!</p>
+            </div>
+          </div>
+
+          <div class="quick-prompts-container" id="quick-prompts-container">
+            <button type="button" class="quick-prompt-btn" data-prompt="What are the top 5 places to visit here?">🏛️ Top 5 places to visit?</button>
+            <button type="button" class="quick-prompt-btn" data-prompt="What are the best local dishes to try?">🍲 Famous local food?</button>
+            <button type="button" class="quick-prompt-btn" data-prompt="When is the best time of year to visit?">📅 Best time to visit?</button>
+            <button type="button" class="quick-prompt-btn" data-prompt="Give me budget travel and safety tips.">💡 Travel & safety tips</button>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <input type="text" id="chat-user-input" placeholder="Ask anything about traveling here..." autocomplete="off" />
+          <button type="button" id="chat-send-btn" class="chat-send-btn" aria-label="Send message">
+            <i data-lucide="send" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dependencies & Application Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="countries-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
