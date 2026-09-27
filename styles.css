@@ -159,25 +159,56 @@ button, select { cursor: pointer; }
   transition: opacity 300ms ease;
 }
 
-/* UI FADED MODE (WHEN HIDE UI IS CLICKED) */
+/* UI FADED MODE (WHEN HIDE UI IS CLICKED - LITERALLY HIDE ENTIRE UI & UNBLOCK ALL GLOBE CLICKS) */
 .experience.ui-faded .topbar,
 .experience.ui-faded .selection-stage,
 .experience.ui-faded .stats-matrix-stage,
+.experience.ui-faded .globe-deck-card > *:not(.deck-controls),
 .experience.ui-faded .control-deck,
-.experience.ui-faded .source-line {
-  opacity: 0.05;
-  pointer-events: none;
-  transition: opacity 300ms ease;
+.experience.ui-faded .source-line,
+.experience.ui-faded .chat-widget-container {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 300ms ease, visibility 300ms ease;
 }
 
-/* DIM HIDE UI DIV ON CLICK BUT KEEP HOVER RESTORE */
 .experience.ui-faded .globe-viewport-deck {
-  opacity: 0.35;
-  transition: opacity 300ms ease;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important;
 }
 
-.experience.ui-faded .globe-viewport-deck:hover {
-  opacity: 1;
+.experience.ui-faded .globe-deck-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  backdrop-filter: none !important;
+  pointer-events: none !important;
+}
+
+.experience.ui-faded #toggle-ui-panels-btn {
+  position: fixed !important;
+  top: 24px !important;
+  left: 24px !important;
+  z-index: 9999 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  background: rgba(6, 20, 32, 0.95) !important;
+  border: 1.5px solid var(--sun) !important;
+  box-shadow: 0 0 25px rgba(255, 200, 87, 0.6), 0 8px 30px rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(16px) !important;
+  transform: none !important;
+}
+
+.experience.ui-faded #toggle-ui-panels-btn:hover {
+  background: rgba(255, 200, 87, 0.3) !important;
+  box-shadow: 0 0 35px rgba(255, 200, 87, 0.85) !important;
+  transform: scale(1.05) !important;
 }
 
 /* BACKGROUND & GLOBE VISUALIZER STYLES */
